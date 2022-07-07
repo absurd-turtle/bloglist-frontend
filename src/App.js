@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import LoginForm from './components/LoginForm'
+import Toggleable from './components/Togglable'
 import "./main.css"
 
 const App = () => {
@@ -13,6 +15,9 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+
+  const loginFormRef = useRef()
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -61,6 +66,7 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      loginFormRef.current.toggleVisibility()
     } catch (exception) {
       console.log("login failed")
       createErrorNotification('Wrong credentials')
@@ -75,47 +81,28 @@ const App = () => {
     blogService.setToken(null)
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        <label htmlFor="username">username</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={username}
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="password">password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={password}
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
-
   const blogView = () => (
     <div>
       <h2>blogs</h2>
-      {user && (<p>{user.name} logged in</p>)}
+      {
+        user && (
+          <div>
+            {user.name} logged in 
+            <button onClick={() => logout()} > logout</button >
+          </div>
+        )
+      }
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
     </div>
   )
 
-  const handleCreate = event => async (blog) => {
-    event.preventDefault()
+  const createBlog = async (blog) => {
     try {
       blogService.create(blog)
       createSuccessNotification('a new blog ' + blog.title + ' by ' + blog.author + ' added')
+      blogFormRef.current.toggleVisibility()
     }
     catch (exception) {
       createErrorNotification('something went wrong')
@@ -129,7 +116,15 @@ const App = () => {
     {(user === null) ? (
       <div>
         <h2>log in</h2 >
-        {loginForm()}
+        <Toggleable buttonLabel='login' ref={loginFormRef}>
+          <LoginForm
+            handleSubmit={handleLogin}
+            handleUsernameChange={ ({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            username={username}
+            password={password}
+          />
+        </Toggleable>
       </div >
     )
       : (
@@ -137,8 +132,9 @@ const App = () => {
           {
             blogView()
           }
-          < BlogForm handleCreate={handleCreate} />
-          <button onClick={() => logout()} > logout</button >
+          <Toggleable buttonLabel='new blog' ref={blogFormRef}>
+            < BlogForm createBlog={createBlog} />
+          </Toggleable>
         </div >
       )}
 
