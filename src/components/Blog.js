@@ -20,8 +20,8 @@ const Blog = ({ blog, like, remove }) => {
       <button onClick={toggleExtraView}>{viewExtraInfo ? 'hide' : 'view'}</button>
       {
         viewExtraInfo && <div>
-          <div>{blog.url}</div>
-          <div>likes {blog.likes} <button onClick={() => like(blog)}>like</button></div>
+          <div data-testid="url">{blog.url}</div>
+          <div data-testid="likes">likes {blog.likes} <button onClick={() => like(blog)}>like</button></div>
           <div>{blog.user.name}</div>
           <button onClick={() => remove(blog)}>remove</button>
         </div>
