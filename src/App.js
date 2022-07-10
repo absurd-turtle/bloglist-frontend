@@ -6,7 +6,7 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import Toggleable from './components/Togglable'
-import "./main.css"
+import './main.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -54,7 +54,7 @@ const App = () => {
 
   const handleLogin = async event => {
     event.preventDefault()
-    console.log("logging in with", username)
+    console.log('logging in with', username)
     try {
       const user = await loginService.login(
         { username, password, }
@@ -70,7 +70,7 @@ const App = () => {
       setPassword('')
       loginFormRef.current.toggleVisibility()
     } catch (exception) {
-      console.log("login failed")
+      console.log('login failed')
       createErrorNotification('Wrong credentials')
     }
   }
@@ -89,7 +89,7 @@ const App = () => {
       {
         user && (
           <div>
-            {user.name} logged in 
+            {user.name} logged in
             <button onClick={() => logout()} > logout</button >
           </div>
         )
@@ -129,7 +129,7 @@ const App = () => {
 
   const removeBlog = async blog => {
     try {
-      if(!window.confirm("Remove blog " + blog.title + " by " + blog.author)){
+      if(!window.confirm('Remove blog ' + blog.title + ' by ' + blog.author)){
         return
       }
       blogService.remove(blog)
