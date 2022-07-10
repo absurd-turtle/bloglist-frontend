@@ -19,12 +19,13 @@ const App = () => {
   const loginFormRef = useRef()
   const blogFormRef = useRef()
 
+  const fetchBlogs = async () => {
+    const blogs = await blogService.getAll()
+    setBlogs(blogs)
+  }
+
   useEffect(() => {
-    blogService.getAll().then(blogs => {
-      console.log(blogs)
-      setBlogs(blogs)
-    }
-    )
+    fetchBlogs()
   }, [])
 
   useEffect(() => {
@@ -93,16 +94,31 @@ const App = () => {
         )
       }
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} like={likeBlog} />
       )}
     </div>
   )
 
   const createBlog = async (blog) => {
     try {
-      blogService.create(blog)
+      const newBlog = {
+        user: user.id,
+        ...blog
+      }
+      blogService.create(newBlog)
       createSuccessNotification('a new blog ' + blog.title + ' by ' + blog.author + ' added')
       blogFormRef.current.toggleVisibility()
+    }
+    catch (exception) {
+      createErrorNotification('something went wrong')
+    }
+  }
+
+  const likeBlog = async blog => {
+    try {
+      blogService.like(blog, user._id)
+      createSuccessNotification('you liked the blog ' + blog.title + ' by ' + blog.author)
+      await fetchBlogs()
     }
     catch (exception) {
       createErrorNotification('something went wrong')

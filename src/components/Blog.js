@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, like }) => {
   const [viewExtraInfo, setViewExtraInfo] = useState(false)
   
   const toggleExtraView = () => {
@@ -17,12 +17,12 @@ const Blog = ({ blog }) => {
 
   return (
     <div style={blogStyle}>
-      {blog.title} {blog.author.name}
+      {blog.title} {blog.author}
       <button onClick={toggleExtraView}>{viewExtraInfo ? "hide" : "view"}</button>
       {
         viewExtraInfo && <div>
           <div>{blog.url}</div>
-          <div>likes {blog.likes} <button>like</button></div>
+          <div>likes {blog.likes} <button onClick={() => like(blog)}>like</button></div>
         </div>
       }
     </div>
