@@ -23,6 +23,7 @@ const Blog = ({ blog, like }) => {
         viewExtraInfo && <div>
           <div>{blog.url}</div>
           <div>likes {blog.likes} <button onClick={() => like(blog)}>like</button></div>
+          <div>{blog.user.name}</div>
         </div>
       }
     </div>
