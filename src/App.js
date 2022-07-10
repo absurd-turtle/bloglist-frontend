@@ -95,7 +95,7 @@ const App = () => {
         )
       }
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} like={likeBlog} />
+        <Blog key={blog.id} blog={blog} like={likeBlog} remove={removeBlog} />
       )}
     </div>
   )
@@ -109,6 +109,7 @@ const App = () => {
       blogService.create(newBlog)
       createSuccessNotification('a new blog ' + blog.title + ' by ' + blog.author + ' added')
       blogFormRef.current.toggleVisibility()
+      await fetchBlogs()
     }
     catch (exception) {
       createErrorNotification('something went wrong')
@@ -119,6 +120,20 @@ const App = () => {
     try {
       blogService.like(blog, user._id)
       createSuccessNotification('you liked the blog ' + blog.title + ' by ' + blog.author)
+      await fetchBlogs()
+    }
+    catch (exception) {
+      createErrorNotification('something went wrong')
+    }
+  }
+
+  const removeBlog = async blog => {
+    try {
+      if(!window.confirm("Remove blog " + blog.title + " by " + blog.author)){
+        return
+      }
+      blogService.remove(blog)
+      createSuccessNotification('you removed the blog ' + blog.title + ' by ' + blog.author)
       await fetchBlogs()
     }
     catch (exception) {
